@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#d6361f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ЮаньЧек">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>ЮаньЧек — карго или прямая доставка</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--tx:#14171c;--mu:#6b7280;--bd:#e3e6eb;--ac:#d6361f;--ok:#12803c;--okbg:#e6f6ec;--hkb:#e6f4fb;--hkl:#9fd0e8;--hkt:#0b6b8a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101215;--card:#1a1d22;--tx:#eef0f3;--mu:#98a0ad;--bd:#2c3037;--ac:#ff6a52;--ok:#4cd07f;--okbg:#14301f;--hkb:#12303d;--hkl:#2f6a85;--hkt:#6fc3e6}}
+*{box-sizing:border-box}html{color-scheme:light dark}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--mu);margin-bottom:4px}
+input,select{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;min-width:0}
+input:focus,select:focus{outline:2px solid var(--ac);border-color:transparent}
+.g{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.row{display:flex;gap:6px}.row input{flex:1}.row select{width:84px}
+.res{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.res{grid-template-columns:1fr}}
+.r{background:var(--card);border:2px solid var(--bd);border-radius:14px;padding:14px}
+.r.win{border-color:var(--ok);background:var(--okbg)}
+.r h2{font-size:15px;margin:0 0 2px}.sub{font-size:12px;color:var(--mu);margin-bottom:8px}
+.tot{font-size:28px;font-weight:700;margin:6px 0}
+.ln{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:3px 0;border-top:1px dashed var(--bd)}
+.ln span:first-child{color:var(--mu)}
+.badge{display:inline-block;font-size:12px;font-weight:600;color:var(--ok);margin-bottom:4px;min-height:16px}
+.sum{text-align:center;font-weight:600;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--bd)}
+details summary{cursor:pointer;font-weight:600}
+details .g{margin-top:12px}
+.g{align-items:end}
+.g4{grid-template-columns:1.6fr 1fr 1.1fr 1.3fr}
+.g3{grid-template-columns:1fr 1fr 1.7fr}
+@media(max-width:700px){.g4,.g3{grid-template-columns:1fr 1fr}.g4 .wide,.g3 .wide{grid-column:1/-1}}
+.hk label{color:var(--hkt);font-weight:600}
+.hk input{background:var(--hkb);border-color:var(--hkl)}
+.ap{border:0;border-radius:8px;background:var(--ac);color:#fff;font:inherit;font-size:13px;font-weight:600;padding:5px 10px}
+.note{font-size:12px;color:var(--mu);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="w">
+<h1>🇨🇳 ЮаньЧек</h1>
+<div class="note" style="margin:-8px 0 14px">Карго или прямая доставка — что выгоднее?</div>
+
+<div class="card">
+  <div class="g g4">
+    <div class="wide"><label>Цена на маркетплейсе, ¥</label><div class="row"><input id="price" type="number" inputmode="decimal" min="0" step="any" placeholder="например 150"><select id="pb" style="width:116px"><option value="n">без НДС</option><option value="v">с НДС</option></select></div></div>
+    <div class="hk"><label>Цена в банке, HK$</label><input id="hkd" type="number" inputmode="decimal" min="0" step="any" placeholder="сумма из банка"></div>
+    <div><label>Вес товара</label><div class="row"><input id="weight" type="number" inputmode="decimal" min="0" step="any" placeholder="0.5"><select id="wu"><option value="kg">кг</option><option value="g">г</option></select></div></div>
+    <div><label>Цена карго за 1 кг</label><div class="row"><input id="cargo" type="number" inputmode="decimal" min="0" step="any" placeholder="5"><select id="cu"><option value="USD">$</option><option value="CNY">¥</option><option value="KZT">₸</option></select></div></div>
+  </div>
+  <div class="note" id="hint"></div>
+</div>
+
+<div class="res">
+  <div class="r" id="rd"><div class="badge" id="bd"></div><h2>Прямая доставка</h2><div class="sub">НДС + эквайринг, доставка бесплатная</div><div class="tot" id="td">—</div><div id="ld"></div></div>
+  <div class="r" id="rc"><div class="badge" id="bc"></div><h2>Через карго</h2><div class="sub">без НДС, оплата за вес</div><div class="tot" id="tc">—</div><div id="lc"></div></div>
+</div>
+<div class="sum" id="sum" style="margin-top:12px">Введите цену и вес</div>
+<div class="note" id="st" style="text-align:center"></div>
+
+<div class="card" style="margin-top:12px">
+<details id="rvd"><summary>🔁 Обратный расчёт и точный курс</summary>
+  <div class="g g3" style="margin-top:12px">
+    <div class="hk"><label>Сумма в банке, HK$</label><input id="rv_a" type="number" inputmode="decimal" min="0" step="any"></div>
+    <div><label>Списано банком, ₸</label><input id="rv_c" type="number" inputmode="decimal" min="0" step="any"></div>
+    <div class="wide"><label>Цена на маркетплейсе, ¥</label><div class="row"><input id="rv_b" type="number" inputmode="decimal" min="0" step="any"><select id="rv_bb" style="width:116px"><option value="v">с НДС</option><option value="n">без НДС</option></select></div></div>
+  </div>
+  <div id="rv_out" style="margin-top:10px"></div>
+  <div class="note">Сумма в HK$ из банка включает НДС и комиссию. Введите HK$ и списанные ₸ — получите курс банка. Введите реальную цену с маркетплейса (с НДС или без) — получите фактическую комиссию банка вместо предполагаемых 3%.</div>
+</details>
+</div>
+
+<div class="card" style="margin-top:12px">
+<details id="set"><summary>⚙️ Настройки</summary>
+  <div class="g">
+    <div><label>НДС, %</label><input id="vat" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Комиссия банка / эквайринг, %</label><input id="fee" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Курс: 1 ¥ = ? ₸</label><input id="rc_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Курс: 1 $ = ? ₸</label><input id="ru_" type="number" inputmode="decimal" step="any"></div>
+    <div class="hk"><label>Курс: 1 HK$ = ? ₸</label><input id="hk_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Показывать итог в</label><select id="out"><option value="KZT">₸ тенге</option><option value="USD">$ доллары</option><option value="CNY">¥ юани</option></select></div>
+    <div><label>Поправка к курсу НБ РК для ¥, %</label><input id="mc_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Поправка к курсу НБ РК для $, %</label><input id="mu_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Поправка к курсу НБ РК для HK$, %</label><input id="mh_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Доп. комиссия при покупке через карго, %</label><input id="cf" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Курс: 1 € = ? ₸ (для таможни)</label><input id="eu_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Таможня РК для посылок</label><select id="cx"><option value="1">Учитывать</option><option value="0">Не учитывать</option></select></div>
+    <div><label>Беспошлинный лимит, €</label><input id="cl_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Лимит веса, кг</label><input id="cw_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Платёж с превышения стоимости, %</label><input id="cr_" type="number" inputmode="decimal" step="any"></div>
+    <div><label>Платёж за кг превышения, €</label><input id="ck_" type="number" inputmode="decimal" step="any"></div>
+  </div>
+  <button id="rf" type="button" style="margin-top:12px;width:100%;padding:11px;border:0;border-radius:10px;background:var(--ac);color:#fff;font:inherit;font-weight:600">🔄 Обновить курс (НБ РК)</button>
+  <div class="note">Курс НБ РК загружается при каждом запуске. Ваши правки курса и калибровка сохраняются как поправка в % к курсу НБ РК, поэтому курс обновляется каждый день и остаётся близким к вашему.</div>
+</details>
+</div>
+<div class="card" style="margin-top:12px">
+<details><summary>ℹ️ О приложении</summary>
+  <div class="note" style="font-size:13px;line-height:1.5;margin-top:10px">
+  <b>ЮаньЧек</b> сравнивает два способа купить товар в Китае: <b>напрямую с маркетплейса</b> (НДС + комиссия банка, доставка бесплатная) и <b>через карго</b> (без НДС, оплата за вес).<br><br>
+  Введите цену в ¥, вес и тариф карго — приложение покажет итог в ₸ и более выгодный вариант. Цену можно ввести и в HK$ из банкинга. Курсы ¥, $, HK$ и € подтягиваются с НБ РК при каждом запуске, а вкладка «Обратный расчёт» подгоняет комиссию и курс HK$ под ваши реальные покупки.<br><br>
+  <b>Таможня РК (посылки, физлица):</b> до 200 € и 31 кг платежей нет. При превышении — 15% от превышения стоимости или 2 € за кг превышения веса, берётся большая сумма. Новый порядок для интернет-торговли пока отложен — лимиты и ставки можно менять в настройках.<br><br>
+  Расчёт ориентировочный и не является налоговой консультацией.</div>
+</details>
+</div>
+<div class="note" style="text-align:center;margin:18px 0 8px">Разработчик: Glebov I.P., KZ<br>Версия <span id="ver"></span></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const APP_VER="1.6";
+const DEF={vat:16,fee:3,cny:69,usd:455.8,mc:0,mu:0,mh:0,pb:"n",bcny:0,busd:0,hk:58.4,out:"KZT",cf:0,wu:"kg",cu:"USD",stamp:"24.11.2026",eur:530,beur:0,cx:1,cl:200,cw:31,cr:15,ck:2};
+let S={...DEF};
+try{const j=JSON.parse(localStorage.getItem("cc_set3")||"null");if(j)S={...DEF,...j};}catch(e){}
+function save(){try{localStorage.setItem("cc_set3",JSON.stringify(S));}catch(e){}}
+$("vat").value=S.vat;$("fee").value=S.fee;$("rc_").value=S.cny;$("ru_").value=S.usd;$("out").value=S.out;$("cf").value=S.cf;$("wu").value=S.wu;$("cu").value=S.cu;
+function setNote(m){$("st").textContent=m}
+$("hk_").value=S.hk;$("pb").value=S.pb;$("eu_").value=S.eur;$("cx").value=S.cx;$("cl_").value=S.cl;$("cw_").value=S.cw;$("cr_").value=S.cr;$("ck_").value=S.ck;
+if(S.bcny&&S.busd){if(S.lc)S.mc=+((S.cny/S.bcny-1)*100).toFixed(3);if(S.lu)S.mu=+((S.usd/S.busd-1)*100).toFixed(3);if(S.lh)S.mh=+((S.hk/(S.busd/7.8)-1)*100).toFixed(3);S.lc=S.lu=S.lh=0}
+$("mc_").value=S.mc;$("mu_").value=S.mu;$("mh_").value=S.mh;
+function applyBase(){if(S.bcny&&S.busd){
+ $("rc_").value=(S.bcny*(1+ns("mc_")/100)).toFixed(2);
+ $("ru_").value=(S.busd*(1+ns("mu_")/100)).toFixed(2);
+ $("hk_").value=(S.busd/7.8*(1+ns("mh_")/100)).toFixed(2);
+ if(S.beur)$("eu_").value=S.beur.toFixed(2)}}
+const ns=id=>{const v=parseFloat(String($(id).value).replace(",","."));return isFinite(v)?v:0};
+function setM(w){if(!(S.bcny&&S.busd))return;
+ if(w==="c")$("mc_").value=+((n("rc_")/S.bcny-1)*100).toFixed(3);
+ if(w==="u")$("mu_").value=+((n("ru_")/S.busd-1)*100).toFixed(3);
+ if(w==="h")$("mh_").value=+((n("hk_")/(S.busd/7.8)-1)*100).toFixed(3)}
+window.onRates=function(r){$("rf").disabled=false;
+ if(!r||!r.ok){setNote("Не удалось обновить курс — используются сохранённые значения.");return}
+ S.bcny=r.cny;S.busd=r.usd;if(r.eur)S.beur=r.eur;S.stamp=r.date;applyBase();calc();
+ setNote((r.src==="web"?"Рыночный курс":"Курс НБ РК")+" на "+r.date+" загружен: ¥ "+r.cny+" · $ "+r.usd+" ₸ (с вашей поправкой)")};
+async function webRates(){
+ const U=["https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json","https://latest.currency-api.pages.dev/v1/currencies/usd.json"];
+ for(const u of U){try{const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);
+  const j=await(await fetch(u,{signal:c.signal,cache:"no-store"})).json();clearTimeout(t);
+  const q=j.usd,k=q&&q.kzt;if(!(k&&q.cny&&q.eur))continue;
+  const d=String(j.date||"").split("-");
+  return{ok:true,cny:+(k/q.cny).toFixed(2),usd:+(+k).toFixed(2),eur:+(k/q.eur).toFixed(2),date:d.length===3?d[2]+"."+d[1]+"."+d[0]:"сегодня",src:"web"}}catch(e){}}
+ return{ok:false}}
+function refresh(){$("rf").disabled=true;setNote("Загружаю курс…");
+ if(window.Android){Android.refresh();return}
+ webRates().then(r=>window.onRates(r)).catch(()=>window.onRates({ok:false}))}
+const n=id=>{const v=parseFloat(String($(id).value).replace(",","."));return isFinite(v)&&v>=0?v:0};
+const SYM={KZT:"₸",USD:"$",CNY:"¥"};
+function fmt(kzt){const o=S.out;let v=kzt;if(o==="USD")v=kzt/S.usd;if(o==="CNY")v=kzt/S.cny;
+  const d=o==="KZT"?0:2;return v.toLocaleString("ru-RU",{maximumFractionDigits:d,minimumFractionDigits:d})+" "+SYM[o]}
+function ln(a,b){return '<div class="ln"><span>'+a+'</span><span>'+b+'</span></div>'}
+let src="cny";
+const f2=x=>x.toLocaleString("ru-RU",{maximumFractionDigits:2});
+const f4=x=>x.toLocaleString("ru-RU",{maximumFractionDigits:4});
+function sync(){const m=S.pb==="v"?1:1+S.vat/100,per=S.cny*(1+S.fee/100)/S.hk;
+ if(src==="hkd"){const v=n("hkd");$("price").value=v?+(v/per/m).toFixed(2):""}
+ else{const v=n("price");$("hkd").value=v?+(v*m*per).toFixed(2):""}
+ $("hint").textContent="Сумма в банке (HK$) = цена с НДС + комиссия. 1 HK$ = "+f2(S.hk)+" ₸"}
+let bMan=false;
+function rev(){const cn=n("rc_")||S.cny,hk=n("hk_")||S.hk,v1=1+n("vat")/100,f=1+n("fee")/100,a=n("rv_a"),c=n("rv_c"),vb=$("rv_bb").value==="v"?1:v1;
+ const bt=(k,v,t,x)=>'<div class="ln"><span></span><button type="button" class="ap" data-k="'+k+'" data-v="'+v+'" data-h="'+(x||"")+'">'+t+'</button></div>';
+ const tot=(a&&c)?c:(a?a*hk:0);let o="",b=n("rv_b");
+ if(!bMan){if(tot){b=tot/(cn*f)/vb;$("rv_b").value=+b.toFixed(2)}else{b=0;$("rv_b").value=""}}
+ const pv=b*vb;
+ if(a&&c)o+=ln("Курс банка","1 HK$ = "+f2(c/a)+" ₸");
+ if(b)o+=ln("Цена с НДС","<b>"+f2(pv)+" ¥</b>")+ln("Цена без НДС",f2(pv/v1)+" ¥");
+ if(bMan&&b&&c){const fp=(c/(pv*cn)-1)*100;
+  o+=ln("Комиссия банка по факту",f2(fp)+"% (в настройках "+f2(n("fee"))+"%)")+(a?bt("both",fp,"Применить комиссию и курс HK$",c/a):bt("fee",fp,"Применить комиссию"))}
+ else if(a&&c)o+=bt("h",c/a,"Применить курс HK$")+'<div class="note">Цена в ¥ — оценка по комиссии из настроек. Введите реальную цену с маркетплейса (с НДС или без) — приложение определит фактическую комиссию банка.</div>';
+ $("rv_out").innerHTML=o||'<div class="note">Введите сумму в HK$ (и в ₸, если знаете, сколько списал банк)</div>'}
+function customs(g,kg){
+ if(String(S.cx)!=="1")return{pay:0,txt:""};
+ const e=g/S.eur,ev=Math.max(0,e-S.cl),ew=Math.max(0,kg-S.cw);
+ if(!ev&&!ew)return{pay:0,txt:"нет — в лимите "+f2(S.cl)+" € и "+f2(S.cw)+" кг (товар ≈ "+f2(e)+" €)"};
+ const pv=ev*S.cr/100,pw=ew*S.ck,pay=Math.max(pv,pw);
+ return{pay:pay*S.eur,txt:(pv>=pw?S.cr+"% от превышения "+f2(ev)+" €":f2(ew)+" кг × "+S.ck+" €")+" = "+f2(pay)+" €"}}
+function calc(){try{rev()}catch(e){}
+  S.vat=n("vat");S.fee=n("fee");S.cny=n("rc_")||DEF.cny;S.usd=n("ru_")||DEF.usd;S.out=$("out").value;S.cf=n("cf");S.pb=$("pb").value;S.mc=ns("mc_");S.mu=ns("mu_");S.mh=ns("mh_");S.hk=n("hk_")||DEF.hk;S.eur=n("eu_")||DEF.eur;S.cx=$("cx").value;S.cl=n("cl_");S.cw=n("cw_");S.cr=n("cr_");S.ck=n("ck_");S.wu=$("wu").value;S.cu=$("cu").value;save();
+  sync();const pr=n("price"),p=S.pb==="v"?pr/(1+S.vat/100):pr,wr=n("weight"),kg=S.wu==="g"?wr/1000:wr,cp=n("cargo");
+  const goods=p*S.cny;
+  const cpk=S.cu==="USD"?cp*S.usd:S.cu==="CNY"?cp*S.cny:cp;
+  const vat=goods*S.vat/100, fee=(goods+vat)*S.fee/100, cu=customs(goods,kg),direct=goods+vat+fee+cu.pay;
+  const ship=kg*cpk, cfee=goods*S.cf/100, cargo=goods+ship+cfee+cu.pay;
+  $("td").textContent=p?fmt(direct):"—";$("tc").textContent=p&&(kg&&cp)?fmt(cargo):"—";
+  $("ld").innerHTML=p?ln("Товар",fmt(goods))+ln("НДС "+S.vat+"%",fmt(vat))+ln("Эквайринг "+S.fee+"%",fmt(fee))+ln("Доставка","бесплатно")+(String(S.cx)==="1"?ln("Таможня РК",cu.pay?fmt(cu.pay):"нет")+(cu.txt?'<div class="note" style="margin:2px 0 4px">'+cu.txt+"</div>":""):""):"";
+  $("lc").innerHTML=p?ln("Товар",fmt(goods))+ln("Карго ("+(+kg.toFixed(3))+" кг)",fmt(ship))+(S.cf?ln("Комиссия "+S.cf+"%",fmt(cfee)):"")+ln("НДС","нет")+(String(S.cx)==="1"?ln("Таможня РК",cu.pay?fmt(cu.pay):"нет")+(cu.txt?'<div class="note" style="margin:2px 0 4px">'+cu.txt+"</div>":""):""):"";
+  ["rd","rc"].forEach(i=>$(i).classList.remove("win"));$("bd").textContent="";$("bc").textContent="";
+  if(p&&kg&&cp){const d=direct-cargo,w=d>0?"rc":"rd";$(w).classList.add("win");$(w==="rc"?"bc":"bd").textContent="✓ Выгоднее";
+    $("sum").textContent=(d===0?"Одинаково":(d>0?"Карго":"Прямая доставка")+" выгоднее на "+fmt(Math.abs(d))+" ("+(Math.abs(d)/Math.max(direct,cargo)*100).toFixed(1)+"%)");}
+  else if(p&&!(kg&&cp)){$("sum").textContent="Введите вес и цену карго для сравнения"}
+  else $("sum").textContent="Введите цену и вес";
+}
+$("price").addEventListener("input",()=>{src="cny"});
+$("hkd").addEventListener("input",()=>{src="hkd"});
+$("rv_b").addEventListener("input",()=>{bMan=$("rv_b").value!==""});
+$("rc_").addEventListener("input",()=>setM("c"));
+$("ru_").addEventListener("input",()=>setM("u"));
+$("hk_").addEventListener("input",()=>setM("h"));
+document.querySelectorAll("input,select").forEach(e=>e.addEventListener("input",calc));
+["mc_","mu_","mh_"].forEach(i=>$(i).addEventListener("input",()=>{applyBase();calc()}));
+$("rf").addEventListener("click",refresh);
+$("rv_out").addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;const v=+t.dataset.v;
+ const k=t.dataset.k;
+ if(k==="h"){$("hk_").value=v.toFixed(2);setM("h")}
+ if(k==="fee"||k==="both")$("fee").value=v.toFixed(3);
+ if(k==="both"){$("hk_").value=(+t.dataset.h).toFixed(2);setM("h")}
+ calc()});
+calc();
+if(S.bcny){applyBase();calc();setNote("Последний загруженный курс НБ РК на "+S.stamp+" · обновляется при запуске")}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
+let ver=APP_VER+" (веб)";
+if(window.Android){try{ver=Android.version()}catch(e){ver=APP_VER}}
+refresh();
+if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(()=>{});
+$("ver").textContent=ver;
+</script>
+</body>
+</html>
